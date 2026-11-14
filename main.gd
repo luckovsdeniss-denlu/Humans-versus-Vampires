@@ -139,7 +139,33 @@ func make_button(text: String) -> Button:
 	return b
 
 
+func _input(event: InputEvent) -> void:
+	# Direct tap handling for the menu (does not depend on the GUI button system).
+	if menu == null or not menu.visible:
+		return
+	var pos := Vector2.ZERO
+	var pressed := false
+	var te := event as InputEventScreenTouch
+	var me := event as InputEventMouseButton
+	if te != null and te.pressed:
+		pos = te.position
+		pressed = true
+	elif me != null and me.pressed:
+		pos = me.position
+		pressed = true
+	if not pressed:
+		return
+	if btn_again.visible and btn_again.get_global_rect().has_point(pos):
+		get_tree().reload_current_scene()
+	elif btn_h.visible and btn_h.get_global_rect().has_point(pos):
+		start_game(false)
+	elif btn_v.visible and btn_v.get_global_rect().has_point(pos):
+		start_game(true)
+
+
 func start_game(as_vamp: bool) -> void:
+	if started:
+		return
 	menu.visible = false
 	var humans: Array = []
 	var vamps: Array = []
@@ -410,6 +436,12 @@ func player_control(a: Actor, delta: float) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	var k := event as InputEventKey
 	if k != null and k.pressed and not k.echo:
+		if not started:
+			if k.keycode == KEY_H:
+				start_game(false)
+			elif k.keycode == KEY_V:
+				start_game(true)
+			return
 		if k.keycode == KEY_1 or k.keycode == KEY_Q:
 			player_build("wall")
 		elif k.keycode == KEY_2 or k.keycode == KEY_E:
