@@ -71,6 +71,7 @@ var hud = null
 var menu: ColorRect
 var title_lbl: Label
 var info_lbl: Label
+var btn_start: Button
 var btn_h: Button
 var btn_v: Button
 var btn_again: Button
@@ -119,6 +120,11 @@ func build_menu(layer: CanvasLayer) -> void:
 	info_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	info_lbl.add_theme_font_size_override("font_size", 26)
 	box.add_child(info_lbl)
+	btn_start = make_button("START GAME")
+	btn_start.custom_minimum_size = Vector2(520, 120)
+	btn_start.add_theme_font_size_override("font_size", 48)
+	btn_start.pressed.connect(start_game.bind(false))
+	box.add_child(btn_start)
 	btn_h = make_button("Play as HUMAN")
 	btn_h.pressed.connect(start_game.bind(false))
 	box.add_child(btn_h)
@@ -157,6 +163,8 @@ func _input(event: InputEvent) -> void:
 		return
 	if btn_again.visible and btn_again.get_global_rect().has_point(pos):
 		get_tree().reload_current_scene()
+	elif btn_start.visible and btn_start.get_global_rect().has_point(pos):
+		start_game(false)
 	elif btn_h.visible and btn_h.get_global_rect().has_point(pos):
 		start_game(false)
 	elif btn_v.visible and btn_v.get_global_rect().has_point(pos):
@@ -359,6 +367,7 @@ func end_game(humans_won: bool) -> void:
 	title_lbl.text = "HUMANS SURVIVED!" if humans_won else "VAMPIRES WIN!"
 	var you_won: bool = (humans_won and not player.vamp) or ((not humans_won) and player.vamp)
 	info_lbl.text = ("You won!" if you_won else "You lost.") + "\nNights survived: %d / %d" % [night_no if not humans_won else NIGHTS_TO_WIN, NIGHTS_TO_WIN]
+	btn_start.visible = false
 	btn_h.visible = false
 	btn_v.visible = false
 	btn_again.visible = true
@@ -437,7 +446,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	var k := event as InputEventKey
 	if k != null and k.pressed and not k.echo:
 		if not started:
-			if k.keycode == KEY_H:
+			if k.keycode == KEY_H or k.keycode == KEY_ENTER or k.keycode == KEY_SPACE:
 				start_game(false)
 			elif k.keycode == KEY_V:
 				start_game(true)
