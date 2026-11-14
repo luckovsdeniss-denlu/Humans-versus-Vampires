@@ -135,6 +135,16 @@ func build_menu(layer: CanvasLayer) -> void:
 	btn_again.pressed.connect(func(): get_tree().reload_current_scene())
 	btn_again.visible = false
 	box.add_child(btn_again)
+	var ver_lbl := Label.new()
+	ver_lbl.text = "Version " + game_version()
+	ver_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ver_lbl.add_theme_font_size_override("font_size", 22)
+	ver_lbl.modulate = Color(1, 1, 1, 0.6)
+	box.add_child(ver_lbl)
+
+
+func game_version() -> String:
+	return str(ProjectSettings.get_setting("application/config/version", "dev"))
 
 
 func make_button(text: String) -> Button:

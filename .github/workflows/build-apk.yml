@@ -51,6 +51,13 @@ jobs:
           EOS
           done
 
+      - name: Stamp version
+        run: |
+          VER=1.0.${{ github.run_number }}
+          sed -i "s/^config\/version=.*/config\/version=\"$VER\"/" project.godot
+          sed -i "s/^version\/name=.*/version\/name=\"$VER\"/; s/^version\/code=.*/version\/code=${{ github.run_number }}/" export_presets.cfg
+          grep -E "version" project.godot export_presets.cfg
+
       - name: Export APK
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: ${{ github.workspace }}/../debug.keystore
