@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   GODOT_VERSION: "4.3"
 
@@ -63,3 +66,12 @@ jobs:
         with:
           name: humans-vs-vampires-apk
           path: build/humans-vs-vampires.apk
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Humans vs Vampires v1.0.${{ github.run_number }}
+          body: Debug-signed Android APK. Download the .apk, copy it to your phone and install it.
+          files: build/humans-vs-vampires.apk
+          target_commitish: ${{ github.sha }}
